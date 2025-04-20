@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
+    private bool isWalking;
 
     private void Update()
     {
@@ -29,6 +30,8 @@ public class Player : MonoBehaviour
         inputVector=inputVector.normalized;//归一化
         Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
 
+        isWalking = moveDir != Vector3.zero;//是否在运动，这个变量将影响到动画
+
         transform.position += moveDir * Time.deltaTime * moveSpeed;//乘以一帧的秒数
 
         //transform.rotation 修改四元数来旋转
@@ -45,5 +48,10 @@ public class Player : MonoBehaviour
         float rotationalSpeed = 10f;
         transform.forward = Vector3.Slerp(transform.forward,moveDir,Time.deltaTime* rotationalSpeed);//将物体的前方方向设置为移动方向
 
+    }
+
+    public bool IsWalking()
+    {
+        return isWalking;
     }
 }

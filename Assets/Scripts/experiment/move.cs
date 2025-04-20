@@ -8,33 +8,41 @@ namespace n1
 {
     public class move : MonoBehaviour
     {
-        
 
-        [SerializeField] private float speed;
+
+        [SerializeField] private float moveSpeed = 5f;
 
         private void Update()
         {
-            Vector2 position = Vector2.zero;
+            Vector2 position = new Vector2(0,0);
 
             if(Input.GetKey(KeyCode.W))
             {
-                position.x = position.x + 1;
+                position.y = position.y + 1;
             }
             if (Input.GetKey(KeyCode.S))
-            {
-                position.x = position.x - 1;
+            { 
+                position.y = position.y - 1;
             }
             if (Input.GetKey(KeyCode.A))
             {
-                position.y = position.y - 1;
+                position.x = position.x - 1;
             }
             if (Input.GetKey(KeyCode.D))
             {
-                position.y = position.y + 1;
+                position.x = position.x + 1;
             }
             position = position.normalized;
-            Vector3 middle = new Vector3(position.y, 0, position.x);
-            transform.position += middle * Time.deltaTime * speed;
+            Vector3 middle = new Vector3(position.x, 0, position.y);
+            transform.position += middle * Time.deltaTime * moveSpeed;
+
+            
+
+            float rotationalSpeed = 5f;
+            transform.forward = Vector3.Slerp(transform.forward, middle, Time.deltaTime * rotationalSpeed);
+
+
+
         }
 
     }
