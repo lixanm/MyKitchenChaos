@@ -6,12 +6,56 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private GameInput gameInput;
+    [SerializeField] private LayerMask countersLayerMask;
+
+
     private bool isWalking;
+    private Vector3 lastInteractDir;
 
     private void Update()
     {
-        Vector2 inputVector = gameInput.GetMovementVectorNormalized();//获取输入的方向向量
+        HandleMovement();
+        HandleInteractions();
+    }
 
+    public bool IsWalking()
+    {
+        return isWalking;
+    }
+
+    private void HandleInteractions()
+    {
+        //重新获取方向值，避免干扰
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();//获取输入的方向向量
+        Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
+
+        if(moveDir != Vector3.zero)
+        {
+            lastInteractDir = moveDir;//如果有输入方向，则更新最后的交互方向
+        }
+
+        float interactDistance = 2f;//交互距离
+
+        if (Physics.Raycast(
+            transform.position,//位置
+            lastInteractDir, //方向
+            out RaycastHit raycastHit,//射线检测到的物体
+            interactDistance, 
+            countersLayerMask)
+        )
+        {
+            //检测到物体
+            if(raycastHit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter))
+            {
+                //有ClearCounter脚本
+                clearCounter.Interact();//调用交互方法
+            }
+        }
+    }
+
+    private void HandleMovement()
+    {
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();//获取输入的方向向量
         Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
 
         float moveDistance = moveSpeed * Time.deltaTime;//移动距离
@@ -25,14 +69,14 @@ public class Player : MonoBehaviour
             transform.position,
             transform.position + Vector3.up * playerHeight,
             playerRadius,
-            moveDir, 
+            moveDir,
             moveDistance
         );//胶囊投射//斜向碰撞无法移动
 
         //解决“斜向碰撞无法移动”的问题
-        if ( !canMove )
+        if (!canMove)
         {
-            Vector3 moveDirX = new Vector3(moveDir.x, 0, 0);
+            Vector3 moveDirX = new Vector3(moveDir.x, 0, 0).normalized;
             canMove = !Physics.CapsuleCast
             (
                 transform.position,
@@ -41,13 +85,13 @@ public class Player : MonoBehaviour
                 moveDirX,
                 moveDistance
             );
-            if( canMove )
+            if (canMove)
             {
                 moveDir = moveDirX;
             }
             else
             {
-                Vector3 moveDirZ = new Vector3(0, 0, moveDir.z);
+                Vector3 moveDirZ = new Vector3(0, 0, moveDir.z).normalized;
                 canMove = !Physics.CapsuleCast
                 (
                     transform.position,
@@ -56,7 +100,7 @@ public class Player : MonoBehaviour
                     moveDirZ,
                     moveDistance
                 );
-                if( canMove )
+                if (canMove)
                 {
                     moveDir = moveDirZ;
                 }
@@ -67,8 +111,8 @@ public class Player : MonoBehaviour
             }
         }
 
-        if ( canMove ) 
-        { 
+        if (canMove)
+        {
             transform.position += moveDir * moveDistance;//乘以一帧的秒数
         }
 
@@ -86,12 +130,7 @@ public class Player : MonoBehaviour
         //transform.LookAt(transform.position);//朝向一个点
 
         float rotationalSpeed = 10f;
-        transform.forward = Vector3.Slerp(transform.forward,moveDir,Time.deltaTime* rotationalSpeed);//将物体的前方方向设置为移动方向
+        transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * rotationalSpeed);//将物体的前方方向设置为移动方向
 
-    }
-
-    public bool IsWalking()
-    {
-        return isWalking;
     }
 }
