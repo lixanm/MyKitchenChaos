@@ -5,34 +5,74 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private GameInput gameInput;
     private bool isWalking;
 
     private void Update()
     {
-        Vector2 inputVector = new Vector2(0, 0);
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();//获取输入的方向向量
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            inputVector.y = +1;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            inputVector.y = -1;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            inputVector.x = -1;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            inputVector.x = +1;
-        }
-        inputVector=inputVector.normalized;//归一化
         Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
 
-        isWalking = moveDir != Vector3.zero;//是否在运动，这个变量将影响到动画
+        float moveDistance = moveSpeed * Time.deltaTime;//移动距离
+        float playerRadius = .7f;//玩家的半径
+        float playerHeight = 2f;//玩家高度
 
-        transform.position += moveDir * Time.deltaTime * moveSpeed;//乘以一帧的秒数
+        //bool canMove = !Physics.Raycast(transform.position, moveDir, playerSize);//发射射线检测是否有物体挡在路上
+
+        bool canMove = !Physics.CapsuleCast
+        (
+            transform.position,
+            transform.position + Vector3.up * playerHeight,
+            playerRadius,
+            moveDir, 
+            moveDistance
+        );//胶囊投射//斜向碰撞无法移动
+
+        //解决“斜向碰撞无法移动”的问题
+        if ( !canMove )
+        {
+            Vector3 moveDirX = new Vector3(moveDir.x, 0, 0);
+            canMove = !Physics.CapsuleCast
+            (
+                transform.position,
+                transform.position + Vector3.up * playerHeight,
+                playerRadius,
+                moveDirX,
+                moveDistance
+            );
+            if( canMove )
+            {
+                moveDir = moveDirX;
+            }
+            else
+            {
+                Vector3 moveDirZ = new Vector3(0, 0, moveDir.z);
+                canMove = !Physics.CapsuleCast
+                (
+                    transform.position,
+                    transform.position + Vector3.up * playerHeight,
+                    playerRadius,
+                    moveDirZ,
+                    moveDistance
+                );
+                if( canMove )
+                {
+                    moveDir = moveDirZ;
+                }
+                else
+                {
+                    moveDir = Vector3.zero;
+                }
+            }
+        }
+
+        if ( canMove ) 
+        { 
+            transform.position += moveDir * moveDistance;//乘以一帧的秒数
+        }
+
+        isWalking = moveDir != Vector3.zero;//是否在运动，这个变量将影响到动画
 
         //transform.rotation 修改四元数来旋转
         //修改变换的欧拉角
