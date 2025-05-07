@@ -12,6 +12,41 @@ public class Player : MonoBehaviour
     private bool isWalking;
     private Vector3 lastInteractDir;
 
+    private void Start()
+    {
+        gameInput.OnInteractAction += GameInput_OnInteractAction;
+    }
+
+    private void GameInput_OnInteractAction(object sender, System.EventArgs e)
+    {
+        //重新获取方向值，避免干扰
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();//获取输入的方向向量
+        Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
+
+        if (moveDir != Vector3.zero)
+        {
+            lastInteractDir = moveDir;//如果有输入方向，则更新最后的交互方向
+        }
+
+        float interactDistance = 2f;//交互距离
+
+        if (Physics.Raycast(
+            transform.position,//位置
+            lastInteractDir, //方向
+            out RaycastHit raycastHit,//射线检测到的物体
+            interactDistance,
+            countersLayerMask)
+        )
+        {
+            //检测到物体
+            if (raycastHit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter))
+            {
+                //有ClearCounter脚本
+                clearCounter.Interact();//调用交互方法
+            }
+        }
+    }
+
     private void Update()
     {
         HandleMovement();
@@ -48,7 +83,7 @@ public class Player : MonoBehaviour
             if(raycastHit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter))
             {
                 //有ClearCounter脚本
-                clearCounter.Interact();//调用交互方法
+                //clearCounter.Interact();//调用交互方法
             }
         }
     }
