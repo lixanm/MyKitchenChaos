@@ -1,9 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set; }
+
+    public event EventHandler<OnSelectedCounterChangedEventArgs>  OnSelectedCounterChanged;
+    //事件参数
+    public class OnSelectedCounterChangedEventArgs : EventArgs
+    {
+        public ClearCounter selectedCounter;
+    }
+
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
@@ -11,6 +21,16 @@ public class Player : MonoBehaviour
 
     private bool isWalking;
     private Vector3 lastInteractDir;
+    private ClearCounter selectedCounter;
+
+    private void Awake()
+    {
+        if(Instance != null)
+        {
+            Debug.LogError("Player instance is not null");
+        }
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -19,32 +39,11 @@ public class Player : MonoBehaviour
 
     private void GameInput_OnInteractAction(object sender, System.EventArgs e)
     {
-        //重新获取方向值，避免干扰
-        Vector2 inputVector = gameInput.GetMovementVectorNormalized();//获取输入的方向向量
-        Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
-
-        if (moveDir != Vector3.zero)
+        if(selectedCounter!=null)
         {
-            lastInteractDir = moveDir;//如果有输入方向，则更新最后的交互方向
+            selectedCounter.Interact();//调用交互方法
         }
 
-        float interactDistance = 2f;//交互距离
-
-        if (Physics.Raycast(
-            transform.position,//位置
-            lastInteractDir, //方向
-            out RaycastHit raycastHit,//射线检测到的物体
-            interactDistance,
-            countersLayerMask)
-        )
-        {
-            //检测到物体
-            if (raycastHit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter))
-            {
-                //有ClearCounter脚本
-                clearCounter.Interact();//调用交互方法
-            }
-        }
     }
 
     private void Update()
@@ -84,7 +83,19 @@ public class Player : MonoBehaviour
             {
                 //有ClearCounter脚本
                 //clearCounter.Interact();//调用交互方法
+                if(clearCounter != selectedCounter)
+                {
+                    SetSelectedCounter(clearCounter);
+                }
             }
+            else
+            {
+                SetSelectedCounter(null);
+            }
+        }
+        else
+        {
+            SetSelectedCounter(null);
         }
     }
 
@@ -167,5 +178,14 @@ public class Player : MonoBehaviour
         float rotationalSpeed = 10f;
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * rotationalSpeed);//将物体的前方方向设置为移动方向
 
+    }
+    private void SetSelectedCounter(ClearCounter selectedCounter)
+    {
+        this.selectedCounter = selectedCounter;
+        //选择对象改变时，触发事件和传递信息
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs
+        {
+            selectedCounter = selectedCounter
+        });
     }
 }
