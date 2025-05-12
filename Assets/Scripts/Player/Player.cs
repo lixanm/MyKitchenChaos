@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IKitchenObjectParent
 {
     public static Player Instance { get; private set; }
 
@@ -17,11 +17,13 @@ public class Player : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
+    [SerializeField] private Transform kitchenObjectHoldPoint;
 
 
     private bool isWalking;
     private Vector3 lastInteractDir;
     private ClearCounter selectedCounter;
+    private KitchenObject kitchenObject;
 
     private void Awake()
     {
@@ -41,7 +43,7 @@ public class Player : MonoBehaviour
     {
         if(selectedCounter!=null)
         {
-            selectedCounter.Interact();//调用交互方法
+            selectedCounter.Interact(this);//调用交互方法
         }
 
     }
@@ -187,5 +189,34 @@ public class Player : MonoBehaviour
         {
             selectedCounter = selectedCounter
         });
+    }
+
+
+    //台面点位置
+    public Transform GetKitchenObjectFollowTransform()
+    {
+        return kitchenObjectHoldPoint;
+    }
+
+    //设置获取厨房对象
+    public void SetKitchenObject(KitchenObject kitchenObject)
+    {
+        this.kitchenObject = kitchenObject;
+    }
+    public KitchenObject GetKitchenObject()
+    {
+        return kitchenObject;
+    }
+
+    //清除柜台上的厨房对象
+    public void ClearKitchenObject()
+    {
+        kitchenObject = null;
+    }
+
+    //柜台上是否有厨房对象
+    public bool HasKitchenObject()
+    {
+        return kitchenObject != null;
     }
 }

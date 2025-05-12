@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class ClearCounter : MonoBehaviour
+public class ClearCounter : MonoBehaviour, IKitchenObjectParent
 {
     [SerializeField] private KitchenObjectSO kitchenObjectSO;
     [SerializeField] private Transform counterToPoint;
@@ -24,26 +24,26 @@ public class ClearCounter : MonoBehaviour
         {
             if (kitchenObject != null)
             {
-                kitchenObject.SetClearCounter(sceondClearCounter);
+                kitchenObject.SetKitchenObjectParent(sceondClearCounter);
             }
         }
 
     }
 
-    //互动
-    public void Interact()
+    //交互，给玩家
+    public void Interact(Player player)
     {
         if(kitchenObject == null)
         {
+            //生成厨房对象
             Transform kitchenObjectTransform = Instantiate(kitchenObjectSO.prefab, counterToPoint);
-            kitchenObjectTransform.GetComponent<KitchenObject>().SetClearCounter(this);
+            kitchenObjectTransform.GetComponent<KitchenObject>().SetKitchenObjectParent(this);
         }
         else
         {
-            Debug.Log(kitchenObject.GetClearCounter());
+            //把对象交给玩家
+            kitchenObject.SetKitchenObjectParent(player);
         }
-
-        
 
     }
 

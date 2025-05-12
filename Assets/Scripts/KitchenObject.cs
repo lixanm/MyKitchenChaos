@@ -9,7 +9,7 @@ public class KitchenObject : MonoBehaviour
     [SerializeField]private KitchenObjectSO kitchenObjectSO;
 
     //确保厨房对象知道自己的位置
-    private ClearCounter clearCounter;
+    private IKitchenObjectParent kitchenObjectParent;
 
     public KitchenObjectSO GetKitchenObjectSO()
     {
@@ -17,24 +17,24 @@ public class KitchenObject : MonoBehaviour
     }
 
     //改变父级
-    public void SetClearCounter(ClearCounter clearCounter)
+    public void SetKitchenObjectParent(IKitchenObjectParent kitchenObjectParent)
     {
-        this.clearCounter?.ClearKitchenObject();//清除原来的父级
+        this.kitchenObjectParent?.ClearKitchenObject();//清除原来的父级
         
-        this.clearCounter = clearCounter;
+        this.kitchenObjectParent = kitchenObjectParent;
 
-        if(clearCounter.HasKitchenObject())
+        if(kitchenObjectParent.HasKitchenObject())
         {
-            Debug.LogError("柜台上已经有厨房对象了");
+            Debug.LogError("厨房对象的父级已经有厨房对象了");
         }
 
-        clearCounter.SetKitchenObject(this);//设置新的父级
+        kitchenObjectParent.SetKitchenObject(this);//设置新的父级
 
-        transform.parent=clearCounter.GetKitchenObjectFollowTransform();//设置父级位置
+        transform.parent=kitchenObjectParent.GetKitchenObjectFollowTransform();//设置父级位置
         transform.localPosition = Vector3.zero;
     }
-    public ClearCounter GetClearCounter()
+    public IKitchenObjectParent GetKitchenObjectParent()
     {
-        return clearCounter;
+        return kitchenObjectParent;
     }
 }
