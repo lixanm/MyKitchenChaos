@@ -11,7 +11,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     //事件参数
     public class OnSelectedCounterChangedEventArgs : EventArgs
     {
-        public ClearCounter selectedCounter;
+        public BaseCounter selectedCounter;
     }
 
     [SerializeField] private float moveSpeed = 5f;
@@ -22,7 +22,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private bool isWalking;
     private Vector3 lastInteractDir;
-    private ClearCounter selectedCounter;
+    private BaseCounter selectedCounter;
     private KitchenObject kitchenObject;
 
     private void Awake()
@@ -81,13 +81,13 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         )
         {
             //检测到物体
-            if(raycastHit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter))
+            if(raycastHit.transform.TryGetComponent<BaseCounter>(out BaseCounter baseCounter))
             {
                 //有ClearCounter脚本
                 //clearCounter.Interact();//调用交互方法
-                if(clearCounter != selectedCounter)
+                if(baseCounter != selectedCounter)
                 {
-                    SetSelectedCounter(clearCounter);
+                    SetSelectedCounter(baseCounter);
                 }
             }
             else
@@ -181,7 +181,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * rotationalSpeed);//将物体的前方方向设置为移动方向
 
     }
-    private void SetSelectedCounter(ClearCounter selectedCounter)
+    private void SetSelectedCounter(BaseCounter selectedCounter)
     {
         this.selectedCounter = selectedCounter;
         //选择对象改变时，触发事件和传递信息
