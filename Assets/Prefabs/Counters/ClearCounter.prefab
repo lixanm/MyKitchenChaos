@@ -136,8 +136,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a0f14d5f5a00b84ab20d197e95884f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clearCounter: {fileID: 9058957745751331070}
-  visualGameObject: {fileID: 8758799831999124074}
+  BaseCounter: {fileID: 9058957745751331070}
+  visualGameObjectArray:
+  - {fileID: 8758799831999124074}
+  - {fileID: 3743486365588731279}
 --- !u!1 &8758799831999124074 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8489276541531669327, guid: 0004cb1e11ad014419b943c7da960724,
@@ -242,8 +244,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0aca2873e0c34b641b3e76d62413c6ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kitchenObjectSO: {fileID: 11400000, guid: c796a96d6375b6a4d826e3efbfac94f8, type: 2}
   counterToPoint: {fileID: 8833414686031612443}
+  kitchenObjectSO: {fileID: 11400000, guid: c796a96d6375b6a4d826e3efbfac94f8, type: 2}
 --- !u!4 &5772209411293602455 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8031019045181988908, guid: 189e0755ec872a644b8d1a243274dd36,

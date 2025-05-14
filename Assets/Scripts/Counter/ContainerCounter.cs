@@ -7,7 +7,7 @@ using UnityEngine;
 public class ContainerCounter : BaseCounter
 {
 
-    //TODO:创建一个事件，触发时可以播放动画
+    //创建一个事件，触发时可以播放动画
     public event EventHandler OnPlayerGrabbedObject;
 
     [SerializeField] private KitchenObjectSO kitchenObjectSO;
@@ -15,7 +15,11 @@ public class ContainerCounter : BaseCounter
 
     public override void Interact(Player player)
     {
-        
+        if(player.HasKitchenObject())
+        {
+            return;
+        }
+
         //生成厨房对象
         Transform kitchenObjectTransform = Instantiate(kitchenObjectSO.prefab);
         kitchenObjectTransform.GetComponent<KitchenObject>().SetKitchenObjectParent(player);
