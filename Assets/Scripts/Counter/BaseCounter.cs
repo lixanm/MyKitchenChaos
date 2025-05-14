@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,15 @@ public abstract class BaseCounter : MonoBehaviour, IKitchenObjectParent
     private KitchenObject kitchenObject;
 
 
-    public abstract void Interact(Player player);
+    public virtual void Interact(Player player)
+    {
+        Debug.LogError("BaseCounter.Interact()");
+    }
+
+    public virtual void InteractAlternate(Player player)
+    {
+        Debug.LogError("BaseCounter.InteractAlternate()");
+    }
 
     //台面点位置
     public Transform GetKitchenObjectFollowTransform()

@@ -20,9 +20,9 @@ public class ContainerCounter : BaseCounter
             return;
         }
 
-        //生成厨房对象
-        Transform kitchenObjectTransform = Instantiate(kitchenObjectSO.prefab);
-        kitchenObjectTransform.GetComponent<KitchenObject>().SetKitchenObjectParent(player);
+        //生成厨房对象到玩家手中
+        KitchenObject.SpawnKitchenObject(kitchenObjectSO, player);
+
 
         OnPlayerGrabbedObject?.Invoke(this,EventArgs.Empty);
     }
