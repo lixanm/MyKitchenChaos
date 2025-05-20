@@ -38,6 +38,7 @@ public class GameInput : MonoBehaviour
             moveDirection.z -= 1;
         }
 
+        //改变角色的位置，速度变量已归一化
         player.transform.position = player.transform.position + moveDirection.normalized * moveSpeed * Time.deltaTime;
 
         //玩家运动的旋转,
@@ -55,8 +56,16 @@ public class GameInput : MonoBehaviour
         //}
 
 
-        //todo:读取玩家移动的方向
+        //读取玩家移动的方向
         player.transform.forward = Vector3.Lerp(player.transform.forward, moveDirection, spinSpeed * Time.deltaTime);
 
     }
+
+
+    //角色是否在移动
+    public bool IsWalking()
+    {
+        return moveDirection != Vector3.zero;
+    }
+
 }
