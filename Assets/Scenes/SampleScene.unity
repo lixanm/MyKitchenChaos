@@ -615,6 +615,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b673014434aa6f8439c9dcb6bceb9f69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 8378424272604812740}
+  moveSpeed: 5
 --- !u!4 &1364358942
 Transform:
   m_ObjectHideFlags: 0
@@ -716,6 +718,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5190679567881086923, guid: ad19ef1f17dfab642bc9e452420af82e,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8166522212747131778, guid: ad19ef1f17dfab642bc9e452420af82e,
         type: 3}
